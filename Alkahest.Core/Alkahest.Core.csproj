@@ -329,5 +329,19 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320857.txt" />
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320861.txt" />
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320857.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320861.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320858.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320858.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
