@@ -253,6 +253,7 @@
     <Compile Include="Net\Protocol\Serializers\ReflectionPacketSerializer.cs" />
     <Compile Include="Net\ServerListRequestHandler.cs" />
     <Compile Include="Net\SocketDisconnectedException.cs" />
+    <Compile Include="Plugins\IPublicPlugin.cs" />
     <Compile Include="Plugins\IPlugin.cs" />
     <Compile Include="Plugins\PluginException.cs" />
     <Compile Include="Plugins\PluginLoader.cs" />
@@ -308,6 +309,24 @@
     <EmbeddedResource Include="Net\Protocol\OpCodes\smt_313623.txt">
       <LogicalName>%(Identity)</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320857.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320858.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320861.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320857.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320861.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320858.txt">
+      <LogicalName>%(Identity)</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Alkahest.snk">
@@ -328,20 +347,6 @@
     <PackageReference Include="System.ValueTuple">
       <Version>4.3.0</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320857.txt" />
-    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320861.txt" />
-    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320857.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320861.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Net\Protocol\OpCodes\opc_320858.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Net\Protocol\OpCodes\smt_320858.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
