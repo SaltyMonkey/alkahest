@@ -27,13 +27,10 @@ namespace Alkahest.Core.Net.Protocol.Packets
         public EntityId Target { get; set; }
 
         [PacketField]
-        public uint Unknown1 { get; set; }
+        public int Unknown1 { get; set; }
 
         [PacketField]
-        public float HPDifference { get; set; }
-
-        [PacketField]
-        public bool IsEnraged { get; set; }
+        public byte Unknown2 { get; set; }
 
         [PacketField]
         public float CurrentHP { get; set; }
@@ -42,6 +39,6 @@ namespace Alkahest.Core.Net.Protocol.Packets
         public float MaxHP { get; set; }
 
         [PacketField]
-        public byte Unknown2 { get; set; }
+        public byte Unknown3 { get; set; }
     }
 }
