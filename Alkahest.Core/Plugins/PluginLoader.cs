@@ -19,7 +19,7 @@ namespace Alkahest.Core.Plugins
         public IReadOnlyCollection<IPlugin> Plugins => _plugins;
 
         readonly IPlugin[] _plugins;
-
+        
         public PluginLoader(string directory, string pattern, string[] exclude)
         {
             Directory.CreateDirectory(directory);
@@ -80,17 +80,24 @@ namespace Alkahest.Core.Plugins
                 p.Start(proxies.ToArray());
 
                 _log.Info("Started plugin {0}", p.Name);
+                PluginsSharedInfo.Instance.PluginsList.Add(p.Name);
             }
-
+            
             _log.Basic("Started {0} plugins", _plugins.Length);
+            _log.Info("Building queue for hooks...");
+            foreach (var proxy in proxies)
+            {
+                proxy.Processor.UpdatePrioritiesForHandlers();
+            }
+            _log.Info("Hooks queues builded");
         }
 
         public void Stop(GameProxy[] proxies)
         {
             CheckProxies(proxies);
-
             foreach (var p in _plugins)
             {
+               
                 p.Stop(proxies.ToArray());
 
                 _log.Info("Stopped plugin {0}", p.Name);

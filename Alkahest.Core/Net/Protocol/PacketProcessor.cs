@@ -20,14 +20,22 @@ namespace Alkahest.Core.Net.Protocol
 
         public PacketSerializer Serializer { get; }
 
-        readonly SortedList<int, RawPacketHandler> _wildcardRawHandlers =
-            new SortedList<int, RawPacketHandler>();
+        readonly HashSet<RawPacketHandler> _wildcardRawHandlers =
+            new HashSet<RawPacketHandler>();
 
-        readonly Dictionary<ushort, SortedList<int, RawPacketHandler>> _rawHandlers =
-            new Dictionary<ushort, SortedList<int, RawPacketHandler>>();
+        readonly Dictionary<ushort, HashSet<RawPacketHandler>> _rawHandlers =
+            new Dictionary<ushort, HashSet<RawPacketHandler>>();
 
-        readonly Dictionary<ushort, SortedList<int,Delegate>> _handlers =
-           new Dictionary<ushort, SortedList<int, Delegate>>();
+        readonly Dictionary<ushort, HashSet<Delegate>> _highPriorityHandlers =
+            new Dictionary<ushort, HashSet<Delegate>>();
+        readonly Dictionary<ushort, HashSet<Delegate>> _lowPriorityHandlers =
+            new Dictionary<ushort, HashSet<Delegate>>();
+        readonly Dictionary<ushort, HashSet<Delegate>> _normalPriorityHandlers =
+            new Dictionary<ushort, HashSet<Delegate>>();
+
+        //can't keep readonly... sadness TODO: Fix it
+        readonly Dictionary<ushort, HashSet<Delegate>> _handlers =
+           new Dictionary<ushort, HashSet<Delegate>>();
 
         readonly IReadOnlyCollection<Delegate> _emptyHandlers =
             new List<Delegate>();
@@ -35,7 +43,7 @@ namespace Alkahest.Core.Net.Protocol
         readonly object _listLock = new object();
 
         readonly object _invokeLock = new object();
-       
+
         public PacketProcessor(PacketSerializer serializer)
         {
             Serializer = serializer ??
@@ -43,8 +51,11 @@ namespace Alkahest.Core.Net.Protocol
 
             foreach (var code in serializer.Messages.Game.OpCodeToName.Keys)
             {
-                _rawHandlers.Add(code, new SortedList<int,RawPacketHandler>());
-                _handlers.Add(code, new SortedList<int,Delegate>());
+                _rawHandlers.Add(code, new HashSet<RawPacketHandler>());
+                 _lowPriorityHandlers.Add(code, new HashSet<Delegate>());
+                _highPriorityHandlers.Add(code, new HashSet<Delegate>());
+                _normalPriorityHandlers.Add(code, new HashSet<Delegate>());
+                _handlers.Add(code, new HashSet<Delegate>());
             }
         }
 
@@ -70,25 +81,44 @@ namespace Alkahest.Core.Net.Protocol
             return name;
         }
 
-        public void AddRawHandler(RawPacketHandler handler, int key)
+        public void AddRawHandler(RawPacketHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
             lock (_listLock)
-                _wildcardRawHandlers.Add(key, handler);
+                _wildcardRawHandlers.Add(handler);
         }
 
-        public void RemoveRawHandler(RawPacketHandler handler, int key)
+        public void RemoveRawHandler(RawPacketHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
 
             lock (_listLock)
-                _wildcardRawHandlers.Remove(key);
+                _wildcardRawHandlers.Remove(handler);
         }
 
-        public void AddRawHandler(string name, RawPacketHandler handler, int key)
+        public void UpdatePrioritiesForHandlers()
+        {
+            foreach (var dictItem in _highPriorityHandlers)
+            {
+                _handlers[dictItem.Key].UnionWith(dictItem.Value);
+            }
+            foreach (var dictItem in _normalPriorityHandlers)
+            {
+                _handlers[dictItem.Key].UnionWith(dictItem.Value);
+            }
+            foreach (var dictItem in _lowPriorityHandlers)
+            {
+                _handlers[dictItem.Key].UnionWith(dictItem.Value);
+            }
+            _highPriorityHandlers.Clear();
+            _normalPriorityHandlers.Clear();
+            _lowPriorityHandlers.Clear();
+        }
+
+        public void AddRawHandler(string name, RawPacketHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -96,10 +126,10 @@ namespace Alkahest.Core.Net.Protocol
             var opCode = GetOpCode(name);
 
             lock (_listLock)
-                _rawHandlers[opCode].Add(key,handler);
+                _rawHandlers[opCode].Add(handler);
         }
 
-        public void RemoveRawHandler(string name, RawPacketHandler handler,int key)
+        public void RemoveRawHandler(string name, RawPacketHandler handler)
         {
             if (handler == null)
                 throw new ArgumentNullException(nameof(handler));
@@ -107,10 +137,10 @@ namespace Alkahest.Core.Net.Protocol
             var opCode = GetOpCode(name);
 
             lock (_listLock)
-                _rawHandlers[opCode].Remove(key);
+                _rawHandlers[opCode].Remove(handler);
         }
 
-        public void AddHandler<T>(PacketHandler<T> handler, int key)
+        public void AddHandler<T>(PacketHandler<T> handler, HandlerPriority priority = HandlerPriority.Normal)
             where T : Packet
         {
             if (handler == null)
@@ -118,11 +148,23 @@ namespace Alkahest.Core.Net.Protocol
 
             var opCode = GetOpCode(GetOpCodeName(typeof(T)));
 
+            
             lock (_listLock)
-                _handlers[opCode].Add(key, handler);
+                switch (priority)
+                {
+                    case HandlerPriority.Low:
+                         _lowPriorityHandlers[opCode].Add(handler);
+                        break;
+                    case HandlerPriority.High:
+                        _highPriorityHandlers[opCode].Add(handler);
+                        break;
+                    default:
+                        _normalPriorityHandlers[opCode].Add(handler);
+                      break;
+                }
         }
 
-        public void RemoveHandler<T>(PacketHandler<T> handler, int key)
+        public void RemoveHandler<T>(PacketHandler<T> handler)
             where T : Packet
         {
             if (handler == null)
@@ -130,8 +172,9 @@ namespace Alkahest.Core.Net.Protocol
 
             var opCode = GetOpCode(GetOpCodeName(typeof(T)));
 
+
             lock (_listLock)
-                _handlers[opCode].Remove(key);
+                _handlers[opCode].Remove(handler);
         }
 
         internal static PacketHeader ReadHeader(byte[] buffer)
@@ -159,30 +202,27 @@ namespace Alkahest.Core.Net.Protocol
         internal bool Process(GameClient client, Direction direction,
             ref PacketHeader header, ref byte[] payload)
         {
-            var rawHandlers = new SortedList<int, RawPacketHandler>();
+            var rawHandlers = new List<RawPacketHandler>();
 
             // Make a copy so we don't have to lock while iterating.
             lock (_listLock)
             {
-
-                foreach (var item in _wildcardRawHandlers)
-                    rawHandlers.Add(item.Key, item.Value);
-                foreach(var item in _rawHandlers[header.OpCode])
-                  rawHandlers.Add(item.Key, item.Value);
+                rawHandlers.AddRange(_wildcardRawHandlers);
+                rawHandlers.AddRange(_rawHandlers[header.OpCode]);
             }
 
             var send = true;
             var name = Serializer.Messages.Game.OpCodeToName[header.OpCode];
             var original = payload;
 
-            if (rawHandlers.Values.Count != 0)
+            if (rawHandlers.Count != 0)
             {
                 var packet = new RawPacket(name)
                 {
                     Payload = payload.Slice(0, header.Length)
                 };
 
-                foreach (var handler in rawHandlers.Values)
+                foreach (var handler in rawHandlers)
                 {
                     try
                     {
@@ -200,7 +240,8 @@ namespace Alkahest.Core.Net.Protocol
                 header = new PacketHeader((ushort)packet.Payload.Length, header.OpCode);
             }
 
-            IReadOnlyCollection<Delegate> handlers = _handlers[header.OpCode].Values.ToList();
+            
+            IReadOnlyCollection<Delegate> handlers = _handlers[header.OpCode];
 
             lock (_listLock)
                 handlers = handlers.Count != 0 ? handlers.ToArray() : _emptyHandlers;
