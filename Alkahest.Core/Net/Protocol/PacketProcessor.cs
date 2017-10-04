@@ -65,8 +65,11 @@ namespace Alkahest.Core.Net.Protocol
                 throw new ArgumentNullException(nameof(name));
 
             if (!Serializer.Messages.Game.NameToOpCode.TryGetValue(name, out var op))
-                throw new ArgumentException("Invalid opcode name.", nameof(name));
-
+            {
+                _log.Warning("Invalid opcode, partial table?");
+                // throw new ArgumentException("Invalid opcode name.", nameof(name));
+                return 0;
+            }
             return op;
         }
 
@@ -124,7 +127,8 @@ namespace Alkahest.Core.Net.Protocol
                 throw new ArgumentNullException(nameof(handler));
 
             var opCode = GetOpCode(name);
-
+            if (opCode == 0)
+                return;
             lock (_listLock)
                 _rawHandlers[opCode].Add(handler);
         }
@@ -135,7 +139,8 @@ namespace Alkahest.Core.Net.Protocol
                 throw new ArgumentNullException(nameof(handler));
 
             var opCode = GetOpCode(name);
-
+            if (opCode == 0)
+                return;
             lock (_listLock)
                 _rawHandlers[opCode].Remove(handler);
         }
@@ -147,8 +152,9 @@ namespace Alkahest.Core.Net.Protocol
                 throw new ArgumentNullException(nameof(handler));
 
             var opCode = GetOpCode(GetOpCodeName(typeof(T)));
+            if (opCode == 0)
+                return;
 
-            
             lock (_listLock)
                 switch (priority)
                 {
@@ -171,8 +177,9 @@ namespace Alkahest.Core.Net.Protocol
                 throw new ArgumentNullException(nameof(handler));
 
             var opCode = GetOpCode(GetOpCodeName(typeof(T)));
-
-
+            if(opCode == 0)
+                return;
+            
             lock (_listLock)
                 _handlers[opCode].Remove(handler);
         }
