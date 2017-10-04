@@ -34,12 +34,12 @@ namespace Alkahest.Core.Net.Protocol.OpCodes
 
             Version = version;
 
-            var asm = Assembly.GetExecutingAssembly();
-            var name = $@"{nameof(Net)}\{nameof(Protocol)}\{nameof(OpCodes)}\{(opCodes ? "opc" : "smt")}_{Version}.txt";
+            //var asm = Assembly.GetExecutingAssembly();
+            var path = $@"{nameof(Net)}\{nameof(Protocol)}\{nameof(OpCodes)}\{(opCodes ? "opc" : "smt")}_{Version}.txt";
             var codeToName = new Dictionary<ushort, string>();
             var nameToCode = new Dictionary<string, ushort>();
 
-            using (var stream = asm.GetManifestResourceStream(name))
+            using (var stream = File.Open(path, FileMode.Open))
             {
                 using (var reader = new StreamReader(stream))
                 {
@@ -47,16 +47,28 @@ namespace Alkahest.Core.Net.Protocol.OpCodes
 
                     while ((line = reader.ReadLine()) != null)
                     {
+                        //Support of comments
+                        if (line.Length <=3) continue;
+                        if (line.Contains("#"))
+                        {
+                            var symbolIndex = line.IndexOf("#", StringComparison.Ordinal);
+                            if (symbolIndex == 0) continue;
+                            else
+                            {
+                               line = line.Substring(0, symbolIndex - 1);
+                            }
+                        }
+                        //-------------------
                         var parts = line.Split(' ');
-
-                        // This is just a marker value.
+                              // This is just a marker value.
                         if (!opCodes && parts[0] == "SMT_MAX")
-                            continue;
+                                continue;
 
                         var code = ushort.Parse(parts[2]);
 
                         codeToName.Add(code, parts[0]);
                         nameToCode.Add(parts[0], code);
+                     
                     }
                 }
             }
