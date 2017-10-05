@@ -227,7 +227,7 @@ namespace Alkahest.Server
             _log.Error("Unhandled exception:");
             _log.Error(args.ExceptionObject.ToString());
             _log.Error("{0} will terminate", Name);
-
+            HostsFileManager.RemoveDirty();
             Environment.Exit(1);
         }
     }

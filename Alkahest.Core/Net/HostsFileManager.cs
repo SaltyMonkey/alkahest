@@ -128,5 +128,14 @@ namespace Alkahest.Core.Net
 
             _log.Basic("Removed hosts entry: {0} -> {1}", host, destination);
         }
+        //Delete all lines with Alkahest word in name - for CSE
+        public static void RemoveDirty()
+        {
+           
+            RunLocked(() => File.WriteAllLines(_hostsPath,
+                File.ReadAllLines(_hostsPath).Where(x => !x.Contains("Alkahest"))));
+
+            _log.Basic("Dirty cleanup for host file performed");
+        }
     }
 }
