@@ -64,8 +64,16 @@ namespace Alkahest.Core.Net.Protocol.OpCodes
                         if (!opCodes && parts[0] == "SMT_MAX")
                                 continue;
 
-                        var code = ushort.Parse(parts[2]);
+                        ushort code = 0;
+                        if (parts.Length == 3)
+                        {
+                            code = ushort.Parse(parts[2]);
+                        }
+                        else
+                        {
+                            code = code = ushort.Parse(parts[1]);
 
+                        }
                         codeToName.Add(code, parts[0]);
                         nameToCode.Add(parts[0], code);
                      
