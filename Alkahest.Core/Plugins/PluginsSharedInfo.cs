@@ -10,8 +10,7 @@ namespace Alkahest.Core.Plugins
     {
         private static PluginsSharedInfo _instance;
         public static PluginsSharedInfo Instance => _instance ?? (_instance = new PluginsSharedInfo());
-        public List<string> PluginsList { get; internal set; }
-        
+        public List<string> PluginsList { get; internal set; } = new List<string>();
     }
 
 
