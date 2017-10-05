@@ -12,12 +12,13 @@ Currently, these commands are supported:
 
 * `decrypt <data center file> <key file> <iv file>`: Decrypt and decompress a
   data center file. Allows it to be read by other commands.
+* `decrypt-res <downloaded resources file>`: Decrypt downloaded resources file.
 * `dump-json <data center file>`: Dump data center contents to a specified
   directory as JSON. The default output directory is `Json`.
 * `dump-xml <data center file>`: Dump data center contents to a specified
   directory as XML. The default output directory is `Xml`.
 
-Note that the dump commands will create over 20,000 files.
+Note that the dump commands (except decrypt-res) will create over 20,000 files.
 
 You can specify the output file or directory for a command by giving the
 `--output` option.

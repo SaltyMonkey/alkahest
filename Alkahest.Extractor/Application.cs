@@ -24,7 +24,8 @@ namespace Alkahest.Extractor
         {
             new DecryptCommand(),
             new DumpJsonCommand(),
-            new DumpXmlCommand()
+            new DumpXmlCommand(),
+            new DecryptDownloadedResourcesCommand()
         };
 
         static string _output;
