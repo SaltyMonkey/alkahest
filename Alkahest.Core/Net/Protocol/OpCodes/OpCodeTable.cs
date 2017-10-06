@@ -17,14 +17,14 @@ namespace Alkahest.Core.Net.Protocol.OpCodes
         public static IReadOnlyDictionary<Region, uint> Versions { get; } =
             new Dictionary<Region, uint>
             {
-                { Region.DE, 320858 },
-                { Region.FR, 320858 },
-                { Region.JP, 313623 },
-                { Region.KR, 313523 },
-                { Region.NA, 320857 },
+                { Region.DE, 321154 },
+                { Region.FR, 321154 },
+                { Region.JP, 321161 },
+                { Region.KR, 321110 },
+                { Region.NA, 321152 },
                 { Region.RU, 320861 },
-                { Region.TW, 313623 },
-                { Region.UK, 320858 }
+                { Region.TW, 321159 },
+                { Region.UK, 321154 }
             };
 
         internal OpCodeTable(bool opCodes, uint version)
