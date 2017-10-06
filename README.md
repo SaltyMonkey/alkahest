@@ -1,9 +1,6 @@
-# ![Alkahest](Alkahest.ico) Alkahest
+# ![Alkahest](Alkahest.ico) Alkahest Unofficial
 
-[![Release](https://img.shields.io/github/release/alexrp/alkahest.svg)](https://github.com/alexrp/alkahest/releases)
-[![NuGet](https://img.shields.io/nuget/v/Alkahest.Core.svg)](https://www.nuget.org/packages/Alkahest.Core)
-[![Build Status](https://ci.appveyor.com/api/projects/status/g4975y955sgosiej?svg=true)](https://ci.appveyor.com/project/alexrp/alkahest)
-[![Discord](https://discordapp.com/api/guilds/302077598593318912/widget.png)](https://discord.gg/5GTr5mw)
+[![Official version Discord](https://discordapp.com/api/guilds/302077598593318912/widget.png)](https://discord.gg/5GTr5mw)
 
 Alkahest is a proxy server for [TERA](http://tera.enmasse.com). At its core,
 it's simply a server that relays communication between the game client and
@@ -19,6 +16,14 @@ language so that it could easily use the Windows Presentation Foundation
 libraries for the purpose of making a UI overlay for the game. It has since
 grown to be a more general-purpose framework for TERA modding, featuring tools
 and APIs for accessing data stored with the game client.
+
+## Extended features in unofficial version
+
+* **Plugins system:** Plugins names list, priorities for hooks 
+* **Client analysis tools:** DownloadedResources.dat decryption 
+* **Security:** Signature change for assembly (optional, similar with ShinraMeter)
+* **Core**: Work with partial opcodes, comments/tera-data mess support in opcodes/sysmessages files, opcodes/sysmessages files moved from assembly 
+* **Server assembly**: Host file cleanup on error
 
 ## Features
 
@@ -42,6 +47,7 @@ and APIs for accessing data stored with the game client.
   support using IronPython.
 * **Reusable core library:** The Alkahest server is only a wrapper around the
   `Alkahest.Core` library which can be embedded in any .NET application.
+
 
 ## Installation
 
