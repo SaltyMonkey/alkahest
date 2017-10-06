@@ -74,6 +74,7 @@
     <Compile Include="Net\Protocol\Logging\PacketLogEntry.cs" />
     <Compile Include="Net\Protocol\Logging\PacketLogReader.cs" />
     <Compile Include="Net\Protocol\Logging\PacketLogWriter.cs" />
+    <Compile Include="Net\Protocol\OpCodes\Test.cs" />
     <Compile Include="Net\Protocol\OpCodes\GameMessageTable.cs" />
     <Compile Include="Net\Protocol\OpCodes\MessageTables.cs" />
     <Compile Include="Net\Protocol\OpCodes\OpCodeTable.cs" />
@@ -356,10 +357,10 @@
       <Version>1.2.0</Version>
     </PackageReference>
     <PackageReference Include="System.Numerics.Vectors">
-      <Version>4.3.0</Version>
+      <Version>4.4.0</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
-      <Version>4.3.0</Version>
+      <Version>4.4.0</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
